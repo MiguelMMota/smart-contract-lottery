@@ -13,6 +13,7 @@ import {VRFV2PlusClient} from "@chainlink/contracts/src/v0.8/vrf/dev/libraries/V
 contract Raffle is VRFConsumerBaseV2Plus {
     /* Errors */
     error Raffle__NotEnoughTimePassedSinceLastRaffle();
+    error Raffle_RaffleNotOpen();
     error Raffle__SendMoreToEnterRaffle();
     error Raffle__TransferFailed();
 
@@ -61,14 +62,19 @@ contract Raffle is VRFConsumerBaseV2Plus {
         i_lotteryInterval = interval;
         i_subscriptionId = subscriptionId;
         i_entranceFee = entranceFee;
+        i_callbackGasLimit = callbackGasLimit;
+        
         s_raffleState = RaffleState.OPEN;
         s_lastTimeStamp = block.timestamp;
-        i_callbackGasLimit = callbackGasLimit;
     }
 
     function enterRaffle() external payable {
         if (msg.value < i_entranceFee) {
             revert Raffle__SendMoreToEnterRaffle();
+        }
+
+        if (s_raffleState != RaffleState.OPEN) {
+            revert Raffle_RaffleNotOpen();
         }
         s_players.push(payable(msg.sender));
         emit playerEnteredRaffle(msg.sender, msg.value);
@@ -79,6 +85,8 @@ contract Raffle is VRFConsumerBaseV2Plus {
         if (block.timestamp - s_lastTimeStamp < i_lotteryInterval) {
             revert Raffle__NotEnoughTimePassedSinceLastRaffle();
         }
+
+        s_raffleState = RaffleState.CALCULATING;
 
         VRFV2PlusClient.RandomWordsRequest memory request = VRFV2PlusClient.RandomWordsRequest({
             keyHash: i_gasLane,
