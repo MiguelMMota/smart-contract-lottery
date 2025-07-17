@@ -17,6 +17,7 @@ docs/
 .github/
 *.log
 lib/
+.gitmodules
 
 # Test files
 .gas-snapshot
