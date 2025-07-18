@@ -41,7 +41,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
     RaffleState private s_raffleState;
 
     /* Events */
-    event playerEnteredRaffle(
+    event PlayerEnteredRaffle(
         address indexed playerAddress,
         uint256 indexed value
     );
@@ -78,7 +78,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
             revert Raffle_RaffleNotOpen();
         }
         s_players.push(payable(msg.sender));
-        emit playerEnteredRaffle(msg.sender, msg.value);
+        emit PlayerEnteredRaffle(msg.sender, msg.value);
     }
 
     //A couple of notes on this:
@@ -180,6 +180,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
     }
 
     function getPlayer(uint256 index) public view returns (address) {
+
         return s_players[index];
     }
 }
