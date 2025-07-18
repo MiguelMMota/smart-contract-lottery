@@ -37,9 +37,9 @@ contract HelperConfig is CodeConstants, Script {
         networkConfigs[ETH_SEPOLIA_CHAIN_ID] = getSepoliaEthConfig();
     }
     
-    function getConfigByChainId(uint256 chainid) public returns (NetworkConfig memory) {
+    function getConfigByChainId(uint256 chainId) public returns (NetworkConfig memory) {
         if (networkConfigs[chainId].vrfCoordinatorV2 != address(0)) {
-            return networkConfigs[chainId]
+            return networkConfigs[chainId];
         } else if (chainId == LOCAL_CHAIN_ID) {
             return getOrCreateAnvilEthConfig();
         } else {
@@ -73,7 +73,7 @@ contract HelperConfig is CodeConstants, Script {
         return localNetworkConfig;
     }
 
-    function getSepoliaEthConfig() {
+    function getSepoliaEthConfig() public pure returns (NetworkConfig memory) {
         return
             NetworkConfig({
                 subscriptionId: 60387374855069028812541229437907786033253565582378195832332737879858035578388, // see subscription at https://vrf.chain.link/
