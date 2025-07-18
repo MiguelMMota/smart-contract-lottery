@@ -16,6 +16,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
     error Raffle_RaffleNotOpen();
     error Raffle__SendMoreToEnterRaffle();
     error Raffle__TransferFailed();
+    error Raffle__RaffleNotNeeded(uint256 balance, uint256 players, RaffleState state);
 
     /* Type declarations */
     enum RaffleState {
@@ -80,7 +81,48 @@ contract Raffle is VRFConsumerBaseV2Plus {
         emit playerEnteredRaffle(msg.sender, msg.value);
     }
 
-    function pickWinner() external {
+    //A couple of notes on this:
+
+    //1. checkUpkeep is the function that the Chainlink Automation nodes call to see if upkeep is needed.
+    //I.e.: if a chainlink automation is setup to call some function based on a custom logic trigger, it
+    //checks this function to see if the trigger is met.
+
+    //2. performUpkeep is the function that the Chainlink Automation nodes call to perform the upkeep,
+    //I.e.: the actual logic we want to automate
+
+    // 3. "bytes calldata /* checkData */" is some syntax to indicate that the variable checkData isn't used.
+
+    /**
+     * @dev this is the function that Chainlink Automation nodes call to see if the lotter is ready to have 
+     * a winner picked. THe following should be true in order for upkeepNeeded to be true:
+     * 1. Enough time has passed since the last raffle
+     * 2. The raffle is open
+     * 3. The contract has ETH (there are players in the raffle)
+     * 4. Implicitly, your subscription has LINK
+     * @param - ignored
+     * @return upkeepNeeded - true if it's time to restart the lottery
+     * @return - ignored
+     */
+    function checkUpkeep(bytes memory /* checkData */)
+        public
+        view
+        returns (bool upkeepNeeded, bytes memory /* performData */)
+    {
+        bool timeHasPassed = (block.timestamp - s_lastTimeStamp) >= i_lotteryInterval;
+        bool isOpen = s_raffleState == RaffleState.OPEN;
+        bool hasBalance = address(this).balance > 0;
+        bool hasPlayers = s_players.length > 0;
+
+        upkeepNeeded = isOpen && timeHasPassed && hasBalance && hasPlayers;
+    }
+
+    function performUpkeep(bytes calldata /* performData */) external {
+        // We want to make sure that we only call performUpkeep when checkUpkeep is true
+        (bool upkeepNeeded,) = checkUpkeep("");
+        if (!upkeepNeeded) {
+            revert Raffle__RaffleNotNeeded(address(this).balance, s_players.length, s_raffleState);
+        }
+
         // check to see if enough time has passed
         if (block.timestamp - s_lastTimeStamp < i_lotteryInterval) {
             revert Raffle__NotEnoughTimePassedSinceLastRaffle();
@@ -120,6 +162,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
         s_raffleState = RaffleState.OPEN;
         s_lastTimeStamp = block.timestamp;
         emit WinnerPicked(recentWinner);
+        
         (bool success, ) = recentWinner.call{value: address(this).balance}("");
         // require(success, "Transfer failed");
         if (!success) {
