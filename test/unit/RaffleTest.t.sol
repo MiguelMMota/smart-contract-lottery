@@ -8,9 +8,9 @@ import {Vm} from "forge-std/Vm.sol";
 
 import {VRFCoordinatorV2_5Mock} from "@chainlink/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2_5Mock.sol";
 
+import {Raffle} from "src/Raffle.sol";
 import {DeployRaffle} from "script/DeployRaffle.s.sol";
 import {CodeConstants, HelperConfig} from "script/HelperConfig.s.sol";
-import {Raffle} from "src/Raffle.sol";
 
 contract RaffleTest is CodeConstants, Test {
     HelperConfig helperConfig;
