@@ -144,6 +144,9 @@ contract Raffle is VRFConsumerBaseV2Plus {
         // Will revert if subscription is not set and funded.
         uint256 requestId = s_vrfCoordinator.requestRandomWords(request);
 
+        // s_vrfCoordinator already emits this event. 
+        // We added it here to make some of our tests a bit easier
+        // (see testPerformUpkeepUpdateRaffleStateAndEmitsRequestedId)
         emit RequestedRaffleWinner(requestId);
     }
 
