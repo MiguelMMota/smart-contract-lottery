@@ -21,3 +21,4 @@ lib/
 
 # Test files
 .gas-snapshot
+coverage.txt
