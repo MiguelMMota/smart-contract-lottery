@@ -18,13 +18,17 @@ contract DeployRaffle is Script {
         if (networkConfig.subscriptionId == 0) {
             CreateSubscription createSubscriptionContract = new CreateSubscription();
             (networkConfig.subscriptionId, ) = createSubscriptionContract
-                .createSubscription(networkConfig.vrfCoordinatorV2);
+                .createSubscription(
+                    networkConfig.vrfCoordinatorV2,
+                    networkConfig.account
+                );
 
             FundSubscription fundSubscriptionContract = new FundSubscription();
             fundSubscriptionContract.fundSubscription(
                 networkConfig.vrfCoordinatorV2,
                 networkConfig.subscriptionId,
-                networkConfig.linkTokenAddress
+                networkConfig.linkTokenAddress,
+                networkConfig.account
             );
         }
 
@@ -44,7 +48,8 @@ contract DeployRaffle is Script {
         addConsumerContract.addConsumer(
             contractToAddTo,
             networkConfig.vrfCoordinatorV2,
-            networkConfig.subscriptionId
+            networkConfig.subscriptionId,
+            networkConfig.account
         );
 
         return (raffle, helperConfig);

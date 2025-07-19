@@ -16,6 +16,12 @@ abstract contract CodeConstants {
 
     uint256 public constant ETH_SEPOLIA_CHAIN_ID = 11155111;
     uint256 public constant LOCAL_CHAIN_ID = 31337;
+
+    address public constant FOUNDRY_DEFAULT_SENDER =
+        0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38;
+
+    address public constant SEPOLIA_TEST_ACCOUNT = 
+        0xCDc986e956f889b6046F500657625E523f06D5F0;
 }
 
 contract HelperConfig is CodeConstants, Script {
@@ -29,6 +35,7 @@ contract HelperConfig is CodeConstants, Script {
         uint32 callbackGasLimit;
         address vrfCoordinatorV2;
         address linkTokenAddress;
+        address account;
     }
 
     NetworkConfig public localNetworkConfig;
@@ -70,7 +77,8 @@ contract HelperConfig is CodeConstants, Script {
             entranceFee: 0.01 ether, // 1e16
             callbackGasLimit: 500000, // 500000 gas
             vrfCoordinatorV2: address(vrfCoordinatorMock),
-            linkTokenAddress: address(linkToken)
+            linkTokenAddress: address(linkToken),
+            account: FOUNDRY_DEFAULT_SENDER
         });
 
         return localNetworkConfig;
@@ -85,7 +93,8 @@ contract HelperConfig is CodeConstants, Script {
                 entranceFee: 0.01 ether, // 1e16
                 callbackGasLimit: 500000, // 500000 gas
                 vrfCoordinatorV2: 0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B, // https://vrf.chain.link
-                linkTokenAddress: 0x779877A7B0D9E8603169DdbD7836e478b4624789
+                linkTokenAddress: 0x779877A7B0D9E8603169DdbD7836e478b4624789,
+                account: SEPOLIA_TEST_ACCOUNT
             });
     }
 }
