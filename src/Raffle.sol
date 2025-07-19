@@ -93,7 +93,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
     // 3. "bytes calldata /* checkData */" is some syntax to indicate that the variable checkData isn't used.
 
     /**
-     * @dev this is the function that Chainlink Automation nodes call to see if the lotter is ready to have 
+     * @dev this is the function that Chainlink Automation nodes call to see if the lottery is ready to have 
      * a winner picked. THe following should be true in order for upkeepNeeded to be true:
      * 1. Enough time has passed since the last raffle
      * 2. The raffle is open
