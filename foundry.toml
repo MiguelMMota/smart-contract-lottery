@@ -6,6 +6,10 @@ remappings = [
     "@chainlink/contracts/=lib/chainlink-brownie-contracts/contracts/",
     "@solmate=lib/solmate/src/"
 ]
-ffi = true  # care! this allows the execution of external scripts within Foundry
+fs_permissions = [
+    { access = "read", path = "./broadcast" },
+    { access = "read", path = "./reports" },
+]
+# ffi = true  # care! this allows the execution of external scripts within Foundry
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
